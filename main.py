@@ -17,6 +17,95 @@ COLORS = {
     "frame": "#ffffff",        # White
 }
 
+# Function to check available balance
+def check_available_balance(expense_amount=0):
+    cursor.execute("SELECT SUM(amount) FROM Transactions WHERE type='Earning'")
+    total_earnings = cursor.fetchone()[0] or 0
+    cursor.execute("SELECT SUM(amount) FROM Transactions WHERE type='Expense'")
+    total_expenses = cursor.fetchone()[0] or 0
+    available_balance = total_earnings - total_expenses
+    return available_balance >= expense_amount
+
+# Update add_transaction to check for sufficient funds
+def add_transaction():
+    try:
+        amount = float(amount_var.get())
+        desc = desc_var.get().strip()
+        trans_type = type_var.get()
+        method = method_var.get()
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
+        if not desc:
+            raise ValueError("Description is required")
+            
+        # Check if there are sufficient funds for an expense
+        if trans_type == "Expense" and not check_available_balance(amount):
+            messagebox.showerror("Error", "Insufficient funds, please add funds")
+            return
+            
+        cursor.execute("SELECT id FROM PaymentMethods WHERE method_name = %s", (method,))
+        method_id = cursor.fetchone()[0]
+        cursor.execute("""
+            INSERT INTO Transactions (type, amount, description, payment_method_id)
+            VALUES (%s, %s, %s, %s)
+        """, (trans_type, amount, desc, method_id))
+        db.commit()
+        amount_entry.delete(0, tk.END)
+        desc_entry.delete(0, tk.END)
+        show_transactions()
+        messagebox.showinfo("Success", "Transaction added!")
+    except ValueError as e:
+        messagebox.showerror("Error", str(e))
+    except Exception as e:
+        messagebox.showerror("Error", "An error occurred: " + str(e))
+
+# Pie chart function to show detailed breakdown by description
+def show_pie_chart():
+    chart_window = tk.Toplevel(root)
+    chart_window.title("Transaction Visual Representation")
+    chart_window.geometry("900x600")
+    chart_window.configure(bg=COLORS["background"])
+    
+    fig = plt.figure(figsize=(12, 10))
+    
+    # First subplot for earnings
+    ax1 = fig.add_subplot(121)
+    cursor.execute("SELECT description, amount FROM Transactions WHERE type='Earning'")
+    earnings_data = cursor.fetchall()
+    
+    if earnings_data:
+        labels = [row[0] for row in earnings_data]
+        sizes = [float(row[1]) for row in earnings_data]
+        ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, shadow=True, 
+                colors=plt.cm.Blues([i/len(labels) for i in range(len(labels))]))
+        ax1.axis('equal')
+        ax1.set_title("Earnings Breakdown")
+    else:
+        ax1.text(0.5, 0.5, "No earnings data available", ha='center', va='center')
+        ax1.axis('off')
+    
+    # Second subplot for expenses
+    ax2 = fig.add_subplot(122)
+    cursor.execute("SELECT description, amount FROM Transactions WHERE type='Expense'")
+    expenses_data = cursor.fetchall()
+    
+    if expenses_data:
+        labels = [row[0] for row in expenses_data]
+        sizes = [float(row[1]) for row in expenses_data]
+        ax2.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, shadow=True,
+                colors=plt.cm.Reds([i/len(labels) for i in range(len(labels))]))
+        ax2.axis('equal')
+        ax2.set_title("Expenses Breakdown")
+    else:
+        ax2.text(0.5, 0.5, "No expense data available", ha='center', va='center')
+        ax2.axis('off')
+    
+    plt.tight_layout()
+    
+    canvas = FigureCanvasTkAgg(fig, master=chart_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=15, pady=15)
+
 # Database connection setup
 try:
     db = mysql.connector.connect(
@@ -243,7 +332,7 @@ def show_pie_chart():
     ax.axis('equal')
     ax.set_title("Earnings vs Expenses")
     chart_window = tk.Toplevel(root)
-    chart_window.title("Visual Representation")
+    chart_window.title("Clik to view transactions Visual Representation")
     chart_window.geometry("700x600")
     chart_window.configure(bg=COLORS["background"])
     canvas = FigureCanvasTkAgg(fig, master=chart_window)
