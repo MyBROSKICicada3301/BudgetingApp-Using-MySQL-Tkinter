@@ -5,26 +5,26 @@ A desktop program for personal finance management built with Python, Tkinter, My
 ## Features
 
 - **Transaction Management**
-  - Add earnings and expenses
-  - Update existing transactions
-  - Delete transactions
-  - View transaction history
+    - Add earnings and expenses
+    - Update existing transactions
+    - Delete transactions
+    - View transaction history
 
 - **Payment Methods**
-  - Add custom payment methods
-  - Select from existing methods for transactions
+    - Add custom payment methods
+    - Select from existing methods for transactions
 
 - **Visualization**
-  - Pie charts showing earnings vs expenses breakdown
-  - Detailed breakdown by transaction description
+    - Pie charts showing earnings vs expenses breakdown
+    - Detailed breakdown by transaction description
 
 - **Accessibility**
-  - High-contrast mode toggle
-  - Color-coded transaction display
+    - High-contrast mode toggle
+    - Color-coded transaction display
 
 - **Financial Oversight**
-  - Real-time balance checking
-  - Insufficient funds detection
+    - Real-time balance checking
+    - Insufficient funds detection
 
 ## Screenshots
 
@@ -37,9 +37,9 @@ A desktop program for personal finance management built with Python, Tkinter, My
 - Python interpreter
 - MySQL Server
 - Required Python packages:
-  - `tkinter`
-  - `mysql-connector-python`
-  - `matplotlib`
+    - `tkinter`
+    - `mysql-connector-python`
+    - `matplotlib`
 
 ## Installation
 
@@ -47,3 +47,8 @@ A desktop program for personal finance management built with Python, Tkinter, My
 ```bash
 git clone https://github.com/MyBROSKICicada3301/BudgetingApp.git
 cd budgeting-app
+```
+
+## Sources
+- [Python GUI Development with Tkinter - YouTube](https://www.youtube.com/watch?v=YR3h2CY21-U)
+- [Python Matplotlib Pie Charts - W3Schools](https://www.w3schools.com/python/matplotlib_pie_charts.asp)
