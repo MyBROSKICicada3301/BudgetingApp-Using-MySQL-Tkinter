@@ -50,5 +50,8 @@ cd budgeting-app
 ```
 
 ## Sources
+
 - [Python GUI Development with Tkinter - YouTube](https://www.youtube.com/watch?v=YR3h2CY21-U)
 - [Python Matplotlib Pie Charts - W3Schools](https://www.w3schools.com/python/matplotlib_pie_charts.asp)
+- [MySQL Database Connection with Python - YouTube](https://www.youtube.com/watch?v=UjuPn6qyeYw)
+- [Data Visualization in Python - YouTube](https://www.youtube.com/watch?v=gdDI_GhIRGo)
