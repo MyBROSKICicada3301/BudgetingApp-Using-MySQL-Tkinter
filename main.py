@@ -26,7 +26,7 @@ def check_available_balance(expense_amount=0):
     available_balance = total_earnings - total_expenses
     return available_balance >= expense_amount
 
-# Update add_transaction to check for sufficient funds
+# Function to add a transaction with sufficient funds check
 def add_transaction():
     try:
         amount = float(amount_var.get())
@@ -216,33 +216,6 @@ def update_method_dropdown():
     if methods:
         method_var.set(methods[0])
 
-# Add transaction
-def add_transaction():
-    try:
-        amount = float(amount_var.get())
-        desc = desc_var.get().strip()
-        trans_type = type_var.get()
-        method = method_var.get()
-        if amount <= 0:
-            raise ValueError("Amount must be positive")
-        if not desc:
-            raise ValueError("Description is required")
-        cursor.execute("SELECT id FROM PaymentMethods WHERE method_name = %s", (method,))
-        method_id = cursor.fetchone()[0]
-        cursor.execute("""
-            INSERT INTO Transactions (type, amount, description, payment_method_id)
-            VALUES (%s, %s, %s, %s)
-        """, (trans_type, amount, desc, method_id))
-        db.commit()
-        amount_entry.delete(0, tk.END)
-        desc_entry.delete(0, tk.END)
-        show_transactions()
-        messagebox.showinfo("Success", "Transaction added!")
-    except ValueError as e:
-        messagebox.showerror("Error", str(e))
-    except Exception as e:
-        messagebox.showerror("Error", "An error occurred: " + str(e))
-
 # Update transaction
 def update_transaction():
     global selected_transaction_id
@@ -299,11 +272,13 @@ def show_transactions():
         JOIN PaymentMethods pm ON t.payment_method_id = pm.id
         ORDER BY t.transaction_date DESC
     """)
+    # Preconfigure tags
+    tree.tag_configure('earning', background=COLORS["primary"])
+    tree.tag_configure('expense', background=COLORS["accent"])
+    
     for row in cursor.fetchall():
         # Color rows differently based on transaction type
         tag = row[1].lower()
-        if tag not in tree.tag_configure():
-            tree.tag_configure(tag, background=COLORS["primary"] if tag == "earning" else COLORS["accent"])
         tree.insert("", tk.END, values=row, tags=(tag,))
 
 def select_transaction(event):
